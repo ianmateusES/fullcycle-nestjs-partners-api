@@ -1,0 +1,83 @@
+###
+@URL = http://localhost:3302
+
+###
+GET {{ URL }}/events
+
+###
+# @name createEvent
+POST {{ URL }}/events
+Content-Type: application/json
+
+{
+  "name": "Vintage",
+  "description": "Evento de eletronica",
+  "date": "2024-11-11T00:00:00.000Z",
+  "price": 100
+}
+
+###
+@eventId = {{ createEvent.response.body.id }}
+
+###
+GET {{ URL }}/events/{{ eventId }}
+
+###
+PATCH {{ URL }}/events/{{ eventId }}
+Content-Type: application/json
+
+{
+  "price": 150
+}
+
+###
+DELETE {{ URL }}/events/{{ eventId }}
+
+
+### - SPOTS -
+
+###
+GET {{ URL }}/events/{{ eventId }}/spots
+
+###
+# @name createSpot
+POST {{ URL }}/events/{{ eventId }}/spots
+Content-Type: application/json
+
+{
+  "name": "A1"
+}
+
+###
+@spotId = {{ createSpot.response.body.id }}
+@spotName = {{ createSpot.response.body.name }}
+
+###
+GET {{ URL }}/events/{{ eventId }}/spots/{{ spotId }}
+
+###
+PATCH {{ URL }}/events/{{ eventId }}/spots/{{ spotId }}
+Content-Type: application/json
+
+{
+  "name": "A2"
+}
+
+###
+DELETE {{ URL }}/events/{{ eventId }}
+
+
+### - RESERVE SPOT -
+
+###
+# @name createReserveSpot
+POST {{ URL }}/events/{{ eventId }}/reserve
+Content-Type: application/json
+
+{
+  "spots": ["{{ spotName }}"],
+  "ticket_kind": "FULL",
+  "email": "test@test.com"
+}
+
+

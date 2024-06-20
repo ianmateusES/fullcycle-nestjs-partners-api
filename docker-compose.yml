@@ -1,0 +1,39 @@
+services:
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: multitenant-backend-nestjs
+  #   entrypoint: npm run start:dev
+  #   env_file: .env
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #   networks:
+  #     - tickets
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
+
+  database:
+    image: mysql:8.0.30-debian
+    container_name: ticket-database-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./.docker/mysql:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+    networks:
+      - tickets
+    healthcheck:
+      test:  ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+networks:
+  tickets:
+    driver: bridge
